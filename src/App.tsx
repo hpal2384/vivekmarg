@@ -49,13 +49,8 @@ function App() {
   const [language, setLanguage] = useState('English')
   const [searchText, setSearchText] = useState('')
   const [libraryTab, setLibraryTab] = useState<'teachings' | 'vivekmarg' | 'my-library'>('teachings')
-  const [savedLifeMomentIds, setSavedLifeMomentIds] = useState<string[]>(() => {
-    try {
-      return JSON.parse(localStorage.getItem('stillfire-vivekmarg-life-library') ?? '[]') as string[]
-    } catch {
-      return []
-    }
-  })
+  const [savedLifeMomentIds, setSavedLifeMomentIds] = useState<string[]>([])
+  const [libraryReady, setLibraryReady] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [videoUrl, setVideoUrl] = useState('')
   const [voiceoverType, setVoiceoverType] = useState('')
@@ -77,8 +72,33 @@ function App() {
   const [analyticsLoading, setAnalyticsLoading] = useState(false)
 
   useEffect(() => {
-    localStorage.setItem('stillfire-vivekmarg-life-library', JSON.stringify(savedLifeMomentIds))
-  }, [savedLifeMomentIds])
+    let isActive = true
+    fetch('/api/library')
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Library unavailable')
+        const data = await response.json() as string[]
+        if (isActive) {
+          setSavedLifeMomentIds(data)
+          setLibraryReady(true)
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setSavedLifeMomentIds([])
+          setLibraryReady(true)
+        }
+      })
+    return () => { isActive = false }
+  }, [])
+
+  useEffect(() => {
+    if (!libraryReady) return
+    fetch('/api/library', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ moment_ids: savedLifeMomentIds }),
+    }).catch(() => undefined)
+  }, [libraryReady, savedLifeMomentIds])
 
   useEffect(() => {
     let isActive = true

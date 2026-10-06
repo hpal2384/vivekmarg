@@ -15,6 +15,7 @@ import {
   uploadYouTubeShort,
 } from './youtube.js'
 import { getReelRecord, listReelRecords } from './reelStore.js'
+import { listLibraryMomentIds, saveLibraryMomentIds } from './libraryStore.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 8787)
@@ -216,6 +217,21 @@ app.post('/api/social/youtube/upload', async (request, response) => {
     response.status(201).json(await uploadYouTubeShort({ videoId, teaching, title: title ?? reel.title, privacyStatus }))
   } catch (error) {
     response.status(error.status ?? 503).json({ error: error.status ? error.message : 'YouTube could not publish this reel. Check the channel connection and try again.' })
+  }
+})
+app.get('/api/library', async (_request, response) => {
+  try {
+    response.json(await listLibraryMomentIds())
+  } catch {
+    response.status(503).json({ error: 'Library data is temporarily unavailable.' })
+  }
+})
+app.post('/api/library', async (request, response) => {
+  const { moment_ids: momentIds } = request.body ?? {}
+  try {
+    response.json(await saveLibraryMomentIds(momentIds))
+  } catch {
+    response.status(503).json({ error: 'Library data could not be saved.' })
   }
 })
 app.get('/api/teachings', (_request, response) => response.json(teachingRecords))
