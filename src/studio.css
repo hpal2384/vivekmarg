@@ -149,8 +149,11 @@ h1 em,h2 em,h3 em { color:var(--green); font-family:var(--serif); font-weight:50
 .life-card-footer { display:flex; align-items:center; justify-content:space-between; gap:7px; margin-top:auto; padding-top:10px; border-top:1px solid #eceee8; }
 .life-card-footer>a { min-width:0; display:inline-flex; align-items:center; gap:4px; overflow:hidden; color:#768577; font-size:7px; text-decoration:none; white-space:nowrap; text-overflow:ellipsis; }
 .life-card-footer>a svg { flex:0 0 auto; }
+.life-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:6px; }
 .life-save { display:inline-flex; align-items:center; justify-content:center; gap:4px; flex:0 0 auto; min-height:25px; padding:0 7px; border:1px solid #d8e1d6; border-radius:3px; color:#4b7554; background:#f7f9f4; font-size:8px; cursor:pointer; }
 .life-save:hover,.life-save.saved { color:#fff; background:#476e51; }
+.life-save.create-reel { border-color:#d8cab2; color:#7a5d22; background:#faf4e8; }
+.life-save.create-reel:hover { color:#fff; background:#997236; }
 .my-library-intro { margin:0 0 13px; color:#798379; font-size:9px; }
 .library-grid .teaching-card { min-height:196px; }
 .library-footnote { display:flex; align-items:flex-start; gap:10px; margin-top:20px; padding:13px 15px; border:1px solid #dfe5dc; border-radius:4px; color:#58715d; background:#edf1e9; }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Activity, ArrowLeft, ArrowRight, BadgeCheck, BarChart3, BookOpenText, Camera, Check, ChevronDown, CircleHelp, Clapperboard, Clock3, Download, ExternalLink, Eye, Film, Heart, LayoutDashboard, Library, LoaderCircle, LockKeyhole, MessageCircle, Music2, Play, Plus, RefreshCw, Search, Share2, ShieldCheck, Sparkles, Upload, Video, Volume2 } from 'lucide-react'
 import teachingRecords from './data/teachings.json'
 import vivekmargLifeRecords from './data/vivekmarg-life.json'
+import { buildLibraryMomentReel } from './lib/libraryReelFactory.js'
 import './studio.css'
 
 type Screen = 'home' | 'library' | 'source' | 'pipeline' | 'storyboard' | 'reel' | 'distribution'
@@ -137,6 +138,26 @@ function App() {
     setVideoProgress({ progress: 0, message: '' })
     setError('')
     setScreen('source')
+  }
+
+  const startLibraryMomentReel = (moment: VivekMargLifeMoment) => {
+    const libraryTeaching = {
+      id: `library-${moment.id}`,
+      topic: moment.title,
+      category: 'Life history',
+      original_text: moment.summary,
+      source: 'VivekMarg · A Life, Year by Year',
+      source_url: moment.source_url,
+      source_type: 'Life history summary',
+      verification_status: 'verified',
+    } as Teaching
+
+    setSelectedTeaching(libraryTeaching)
+    setScript(buildLibraryMomentReel(moment))
+    setVideoUrl('')
+    setVideoProgress({ progress: 0, message: '' })
+    setError('')
+    setScreen('storyboard')
   }
 
   const generateReel = async () => {
@@ -296,7 +317,7 @@ function App() {
         <div className="life-moment-meta"><span>{moment.year}</span><span>VIVEKMARG · LIFE TIMELINE</span></div>
         <h3>{moment.title}</h3>
         <p>{moment.summary}</p>
-        <div className="life-card-footer"><a href={moment.source_url} target="_blank" rel="noreferrer">{moment.source_section} <ExternalLink size={12} /></a><button className={saved ? 'life-save saved' : 'life-save'} onClick={() => toggleLifeMoment(moment.id)}>{saved ? <><Check size={13} /> In My Library</> : <><Plus size={13} /> Add to My Library</>}</button></div>
+        <div className="life-card-footer"><a href={moment.source_url} target="_blank" rel="noreferrer">{moment.source_section} <ExternalLink size={12} /></a><div className="life-actions"><button className={saved ? 'life-save saved' : 'life-save'} onClick={() => toggleLifeMoment(moment.id)}>{saved ? <><Check size={13} /> In My Library</> : <><Plus size={13} /> Add to My Library</>}</button><button className="life-save create-reel" onClick={() => startLibraryMomentReel(moment)}><Sparkles size={13} /> Create reel</button></div></div>
       </article>
     }
     return <><section className="page-heading"><div><p className="eyebrow">THE KNOWLEDGE BASE</p><h1>Teaching library</h1><p>Every original passage stays tied to its source. Only source-verified teachings can be used for generation.</p></div><div className="library-counter"><strong>{String(verifiedTeachingCount).padStart(2, '0')}</strong><span>verified sources<br />of {String(teachings.length).padStart(2, '0')} records</span></div></section>
