@@ -97,6 +97,18 @@ test('Kannada generation translates the story without changing the source teachi
   assert.match(script.ai_interpretation, /^AI Interpretation — Not an Original Quote:/)
 })
 
+test('Hindi and Punjabi are accepted as supported script languages', async () => {
+  for (const language of ['Hindi', 'Punjabi']) {
+    const response = await postJson('/api/generate-reel', {
+      teaching_id: 'fearlessness-001', language, template: 'Storytelling',
+    })
+    const script = await response.json()
+    assert.equal(response.status, 200, language)
+    assert.equal(script.language, language)
+    assert.equal(script.original_teaching, 'Be not afraid of anything. You will do marvellous work. The moment you fear, you are nobody.')
+  }
+})
+
 test('malformed JSON requests receive a friendly JSON error', async () => {
   const response = await fetch(`${baseUrl}/api/generate-reel`, {
     method: 'POST',
